@@ -90,6 +90,11 @@ case "$1" in
 
     mkdir "${TMP_DIR}"/raw "${TMP_DIR}"/cooked "${TMP_DIR}"/opt
 
+    # TODO:
+    # use --get-thumbnail to testif there is a thumbnIl
+    # if not take a thumbnail from other sources
+    # see if i can manage to get the artist and the song procedurally
+
     youtube-dl \
       --ignore-errors \
       --write-thumbnail \
