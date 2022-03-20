@@ -103,7 +103,7 @@ case "$1" in
       -- "$@" \
       1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
-    DOWNLOAD_IMG_--format 'bestaudio'PID=$!
+    DOWNLOAD_IMG_PID=$!
 
     
     #ls "${TMP_DIR}/cooked/"
