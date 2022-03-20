@@ -110,7 +110,8 @@ case "$1" in
     echo hello
     ls "${TMP_DIR}/cooked/"
     echo hello
-    #magick mogrify -format JPEG -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
+    magick mogrify -format JPEG -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
+    ls "${TMP_DIR}/cooked/"
 
     youtube-dl \
       --ignore-errors \
