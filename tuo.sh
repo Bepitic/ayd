@@ -104,7 +104,8 @@ case "$1" in
       1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
     #FIXME:  conversion of the image to jpg
-    magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
+    #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
+    magick mogrify -format JPEG -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
 
     youtube-dl \
       --ignore-errors \
@@ -162,6 +163,7 @@ case "$1" in
         #printf "$BLUE raw->$(ls "${TMP_DIR}/raw/") $NC \n\n"
         #printf "$BLUE opt->$(ls "${TMP_DIR}/opt/") $NC \n\n"
         #printf "$BLUE coo->$(ls "${TMP_DIR}/cooked/") $NC \n\n"
+        #sleep 2 #FIXME
         #  }
 
 
