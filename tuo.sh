@@ -255,6 +255,8 @@ case "$1" in
 
       if [ ! "${extension}" = "jpg" ]; then
 
+        #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
+        echo the file is: $file
         filewiked=$(cut -d "." -f1 <<< "$filename")
         mkdir -p "${TMP_DIR}"/cooked/"${filename}"
 
