@@ -141,6 +141,7 @@ case "$1" in
               mv "${file}" "${TMP_DIR}/opt/"
 
               BN=$(basename -- "${file}")
+              sleep 10
 
               ffmpeg \
                 -hide_banner \
@@ -251,6 +252,7 @@ case "$1" in
     mkdir -p "${OUT_DIR}"
 
     magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
+    rm "${TMP_DIR}/cooked/*.webp"
     ls "${TMP_DIR}/cooked/"
     sleep 3
 
