@@ -105,6 +105,7 @@ case "$1" in
 
     #FIXME:  conversion of the image to jpg
     #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
+    ls "${TMP_DIR}/cooked/"
     magick mogrify -format JPEG -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
 
     youtube-dl \
