@@ -103,6 +103,8 @@ case "$1" in
       -- "$@" \
       1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
+    DOWNLOAD_IMG_--format 'bestaudio'PID=$!
+
     
     #ls "${TMP_DIR}/cooked/"
     #echo hello
@@ -122,6 +124,8 @@ case "$1" in
 
     if echo $1 | grep -q "playlist";then
 
+      TOTALE=$(youtube-dl -- "$@" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
+
       while kill -0 "$NDL" >/dev/null 2>&1; do
 
         if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
@@ -135,8 +139,8 @@ case "$1" in
             #if [ ! "${extension}" = "part" ]; then
             if [[ ! $extension =~ "part"  ]]; then
 
-              printf $filenamebase
-              printf $extension
+              #printf $filenamebase
+              #printf $extension
 
               mv "${file}" "${TMP_DIR}/opt/"
 
@@ -180,8 +184,11 @@ case "$1" in
           fi
         done
 
+
         #play an animation while it's encoding to mp3
-        ((total=${#NDL[@]} - 1))
+        # $((total=${#NDL[@]} - 1))
+        total=expr $TOTALE + 0
+
         printf "$GREEN Encoding to mp3(/)->($count/$total)<-(/)Downloaded$NC\r"
         sleep .2
         printf "$GREEN Encoding to mp3(|)->($count/$total)<-(|)Downloaded$NC\r"
