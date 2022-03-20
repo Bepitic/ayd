@@ -96,7 +96,7 @@ case "$1" in
     # see if i can manage to get the artist and the song procedurally
 
     youtube-dl \
-      --ignore-errors \
+      #--ignore-errors \
       --write-thumbnail \
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
@@ -105,6 +105,7 @@ case "$1" in
 
     #FIXME:  conversion of the image to jpg
     #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
+    
     echo hello
     ls "${TMP_DIR}/cooked/"
     echo hello
