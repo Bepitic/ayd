@@ -95,24 +95,19 @@ case "$1" in
     # if not take a thumbnail from other sources
     # see if i can manage to get the artist and the song procedurally
 
-      #--ignore-errors \
     youtube-dl \
+      --ignore-errors \
       --write-thumbnail \
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
       -- "$@" \
+      1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
-      #1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
-
-    #FIXME:  conversion of the image to jpg
-    #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
     
-    echo hello
-    ls "${TMP_DIR}/cooked/"
-    echo hello
-    magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
-    rm "${TMP_DIR}/cooked/*.webp"
-    ls "${TMP_DIR}/cooked/"
+    #ls "${TMP_DIR}/cooked/"
+    #echo hello
+    #rm "${TMP_DIR}/cooked/*.webp"
+    #ls "${TMP_DIR}/cooked/"
 
     youtube-dl \
       --ignore-errors \
@@ -255,6 +250,10 @@ case "$1" in
 
     mkdir -p "${OUT_DIR}"
 
+    magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
+    ls "${TMP_DIR}/cooked/"
+    sleep 3
+
     for file in  "${TMP_DIR}"/cooked/* ; do
       filenamebase=$(basename -- "$file")
       extension="${filenamebase##*.}"
@@ -265,7 +264,7 @@ case "$1" in
       if [ ! "${extension}" = "jpg" ]; then
 
         #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
-        echo the file is: $file
+        #echo the file is: $file
         filewiked=$(cut -d "." -f1 <<< "$filename")
         mkdir -p "${TMP_DIR}"/cooked/"${filename}"
 
