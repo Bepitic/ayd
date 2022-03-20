@@ -104,7 +104,7 @@ case "$1" in
       1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
     #FIXME:  conversion of the image to jpg
-    imagemagick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
+    magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
 
     youtube-dl \
       --ignore-errors \
