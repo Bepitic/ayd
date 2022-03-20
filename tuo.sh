@@ -101,7 +101,8 @@ case "$1" in
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
       -- "$@" \
-      1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
+
+      #1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
     #FIXME:  conversion of the image to jpg
     #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
