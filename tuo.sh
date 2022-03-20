@@ -124,7 +124,7 @@ case "$1" in
 
     if echo $1 | grep -q "playlist";then
 
-      TOTALE=$(youtube-dl -- "$@" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
+      TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
 
       while kill -0 "$NDL" >/dev/null 2>&1; do
 
@@ -135,7 +135,7 @@ case "$1" in
             filenamebase=$(basename -- "$file")
             extension="${filenamebase##*.}"
 
-            printf $extension
+            #printf $extension
             #if [ ! "${extension}" = "part" ]; then
             if [[ ! $extension =~ "part"  ]]; then
 
