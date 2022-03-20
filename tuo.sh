@@ -95,8 +95,8 @@ case "$1" in
     # if not take a thumbnail from other sources
     # see if i can manage to get the artist and the song procedurally
 
-    youtube-dl \
       #--ignore-errors \
+    youtube-dl \
       --write-thumbnail \
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
