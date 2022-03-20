@@ -69,6 +69,7 @@ pip_install()
     TSS_PID=$!
 
     pkg_install git
+    pkg_install imagemagick
     pkg_install ffmpeg
     pkg_install python
     pip_install pip
