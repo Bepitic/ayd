@@ -111,9 +111,9 @@ case "$1" in
     #rm "${TMP_DIR}/cooked/*.webp"
     #ls "${TMP_DIR}/cooked/"
 
+      #--ignore-errors \
     youtube-dl \
-      --ignore-errors \
-      --format 'bestaudio[ext=mp3]' \
+      --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
 
