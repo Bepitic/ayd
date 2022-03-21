@@ -113,7 +113,7 @@ case "$1" in
 
     youtube-dl \
       --ignore-errors \
-      --format 'bestaudio' \
+      --format 'bestaudio[ext=mp3]' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
 
