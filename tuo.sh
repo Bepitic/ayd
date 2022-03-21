@@ -6,6 +6,7 @@
 #Author: Francisco Amoros Cubells
 #About: This file it's for get an url of yt (provide termux) and extract an mp3
 
+ff='/data/data/com.termux/files/usr/bin/'
 
 # Create variables for colors in the shell
 RED='\033[0;31m'
@@ -113,6 +114,8 @@ case "$1" in
 
       #--ignore-errors \
     youtube-dl \
+      -prefer-ffmpeg \
+      --ffmpeg-location $ff \
       --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
