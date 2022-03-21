@@ -96,14 +96,13 @@ case "$1" in
     # if not take a thumbnail from other sources
     # see if i can manage to get the artist and the song procedurally
 
-    printf "${YELLOW} Download images ${NC}\n"
     youtube-dl \
       --ignore-errors \
       --write-thumbnail \
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
       -- "$@" \
-      1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt
+      1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt &
 
     DOWNLOAD_IMG_PID=$!
 
@@ -113,7 +112,6 @@ case "$1" in
     #rm "${TMP_DIR}/cooked/*.webp"
     #ls "${TMP_DIR}/cooked/"
 
-    printf "${YELLOW} Download videos ${NC}\n"
     youtube-dl \
       --ignore-errors \
       --prefer-ffmpeg \
@@ -121,7 +119,7 @@ case "$1" in
       --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
-      1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
+      1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt &
 
     YDL_PID=$!
 
@@ -131,6 +129,7 @@ case "$1" in
 
       TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
 
+      while kill -0 "$NDL" >/dev/null 2>&1; do
 
         if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
 
@@ -177,8 +176,37 @@ case "$1" in
         #sleep 2 #FIXME
         #  }
 
+        echo variables:
+        echo ${NDL[@]}
+        sleep 5
+
+        #Count the process finished
+        count=0
+        for i in "${NDL[@]}"; do
+
+          if ! ps -p "$i" > /dev/null
+          then
+            ((count=count + 1))
+          fi
+        done
 
 
+        #play an animation while it's encoding to mp3
+        # $((total=${#NDL[@]} - 1))
+        total=expr $TOTALE + 0
+
+        printf "$GREEN Encoding to mp3(/)->($count/$total)<-(/)Downloaded$NC\r"
+        sleep .2
+        printf "$GREEN Encoding to mp3(|)->($count/$total)<-(|)Downloaded$NC\r"
+        sleep .2
+        printf "$GREEN Encoding to mp3(\)->($count/$total)<-(\)Downloaded$NC\r"
+        sleep .2
+        printf "$GREEN Encoding to mp3(-)->($count/$total)<-(-)Downloaded$NC\r"
+        sleep .2
+
+      done
+
+      printf "$BLUE Encoded         (-)                                 $NC \n\n"
 
     else
 
@@ -206,7 +234,6 @@ case "$1" in
 
               BN=$(basename -- "${file}")
 
-              printf "${YELLOW} converter videos ${NC}\n"
               ffmpeg \
                 -hide_banner \
                 -i "${TMP_DIR}"/opt/"${BN}" \
@@ -240,10 +267,13 @@ case "$1" in
     # counting  if there is some number of files
     count=`ls -1  "${TMP_DIR}/cooked/*.webp" 2>/dev/null | wc -l`
     #if there is some files enter in the if
-    magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
-    rm "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
-    #ls "${TMP_DIR}/cooked/"
-    #sleep 3
+    if [ $count != 0 ]
+    then 
+      magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
+      rm "${TMP_DIR}/cooked/*.webp"
+      #ls "${TMP_DIR}/cooked/"
+      #sleep 3
+    fi
 
     for file in  "${TMP_DIR}"/cooked/* ; do
       filenamebase=$(basename -- "$file")
