@@ -174,6 +174,9 @@ case "$1" in
         #sleep 2 #FIXME
         #  }
 
+        echo variables:
+        echo ${NDL[@]}
+        sleep 5
 
         #Count the process finished
         count=0
