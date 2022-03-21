@@ -135,12 +135,12 @@ case "$1" in
             filenamebase=$(basename -- "$file")
             extension="${filenamebase##*.}"
 
-            #printf $extension
+            printf $extension
             #if [ ! "${extension}" = "part" ]; then
             if [[ ! $extension =~ "part"  ]]; then
 
-              #printf $filenamebase
-              #printf $extension
+              printf $filenamebase
+              printf $extension
 
               mv "${file}" "${TMP_DIR}/opt/"
 
@@ -258,17 +258,22 @@ case "$1" in
 
     mkdir -p "${OUT_DIR}"
 
-    magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
-    rm "${TMP_DIR}/cooked/*.webp"
-    ls "${TMP_DIR}/cooked/"
-    sleep 3
+    # counting  if there is some number of files
+    count=`ls -1  "${TMP_DIR}/cooked/*.webp" 2>/dev/null | wc -l`
+    #if there is some files enter in the if
+    if [ $count != 0 ]
+    then 
+      magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp"
+      rm "${TMP_DIR}/cooked/*.webp"
+      #ls "${TMP_DIR}/cooked/"
+      #sleep 3
+    fi
 
     for file in  "${TMP_DIR}"/cooked/* ; do
       filenamebase=$(basename -- "$file")
       extension="${filenamebase##*.}"
       filename="${filenamebase%.*}"
       #mkdir -p "${TMP_DIR}"/cooked/"${filename}"
-
 
       if [ ! "${extension}" = "jpg" ]; then
 
