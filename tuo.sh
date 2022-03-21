@@ -112,9 +112,9 @@ case "$1" in
     #rm "${TMP_DIR}/cooked/*.webp"
     #ls "${TMP_DIR}/cooked/"
 
-      #--ignore-errors \
     youtube-dl \
-      -prefer-ffmpeg \
+      --ignore-errors \
+      --prefer-ffmpeg \
       --ffmpeg-location $ff \
       --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
