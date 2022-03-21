@@ -116,7 +116,8 @@ case "$1" in
       --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
-      1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt &
+
+      #1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt &
 
     YDL_PID=$!
 
