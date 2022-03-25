@@ -5,7 +5,6 @@
 
 #Author: Francisco Amoros Cubells
 #About: This file it's for get an url of yt (provide termux) and extract an mp3
-
 ff='/data/data/com.termux/files/usr/bin/'
 
 # Create variables for colors in the shell
@@ -103,7 +102,8 @@ case "$1" in
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
       -- "$@" \
-      1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt
+
+      # 1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt
 
     DOWNLOAD_IMG_PID=$!
 
@@ -121,7 +121,7 @@ case "$1" in
       --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
-      1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
+      # 1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
 
     YDL_PID=$!
 
@@ -149,7 +149,7 @@ case "$1" in
               mv "${file}" "${TMP_DIR}/opt/"
 
               BN=$(basename -- "${file}")
-              sleep 10
+              # sleep 10
 
               ffmpeg \
                 -hide_banner \
@@ -159,7 +159,8 @@ case "$1" in
                 -vn \
                 -map_metadata -1 \
                 "${TMP_DIR}/cooked/${file##*/}.mp3" \
-                1>>$HOME/logs/enc_log.txt 2>>$HOME/logs/enc_err.txt &
+
+                # 1>>$HOME/logs/enc_log.txt 2>>$HOME/logs/enc_err.txt &
 
               YDL_PID="$! $YDL_PID"
 
@@ -237,13 +238,7 @@ case "$1" in
 
     mkdir -p "${OUT_DIR}"
 
-    # counting  if there is some number of files
-    count=`ls -1  "${TMP_DIR}/cooked/*.webp" 2>/dev/null | wc -l`
-    #if there is some files enter in the if
     magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
-    rm "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
-    #ls "${TMP_DIR}/cooked/"
-    #sleep 3
 
     for file in  "${TMP_DIR}"/cooked/* ; do
       filenamebase=$(basename -- "$file")
