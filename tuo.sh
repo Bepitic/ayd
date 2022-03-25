@@ -136,6 +136,7 @@ case "$1" in
 
           for file in "${TMP_DIR}"/raw/* ; do
 
+            printf "trying to encode into mp3?: $file"
             filenamebase=$(basename -- "$file")
             extension="${filenamebase##*.}"
 
@@ -241,6 +242,7 @@ case "$1" in
     magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
 
     for file in  "${TMP_DIR}"/cooked/* ; do
+      printf "trying to fit image into mp3?: $file"
       filenamebase=$(basename -- "$file")
       extension="${filenamebase##*.}"
       filename="${filenamebase%.*}"
