@@ -133,14 +133,18 @@ case "$1" in
       --skip-download \
       --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
       -- "$@" \
-      1>/dev/null 2>$HOME/logs/err_img.txt ;
-          printf "${YELLOW} Download images ${NC}\n" &
+      1>/dev/null 2>$HOME/logs/err_img.txt &
+
       # 1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt
 
     # Ad the pid into the array of pids
     DOWNLOAD_IMG_PID=$!
     number_of_processes+=(DOWNLOAD_IMG_PID)
 
+    sleep 5 &
+
+    DOWNLOAD_IMG_PID=$!
+    number_of_processes+=(DOWNLOAD_IMG_PID)
     
     #ls "${TMP_DIR}/cooked/"
     #echo hello
