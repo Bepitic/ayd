@@ -61,6 +61,9 @@ debug() {
   clear
 
 case "$1" in
+  job*)
+    printf "$(jobs)"
+    ;;
   raw)
     printf "$BLUE raw->$(ls -la "${TMP_DIR}/raw/") $NC \n\n"
     ;;
@@ -192,7 +195,7 @@ case "$1" in
         printf "$GREEN $(jobs|wc -l) $end_processes of ${#number_of_processes[@]} (\) $NC \r"
         sleep .3
 
-        # debug "raw"
+        debug "jobs"
 
 
 
