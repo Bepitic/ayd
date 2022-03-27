@@ -166,7 +166,7 @@ case "$1" in
     if echo $1 | grep -q "list";then
 
       TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
-      echo Number of videos = $TOTALE
+      printf "Number of videos = $TOTALE"
 
       end_processes=0
       while [ ${#number_of_processes[@]} -ge 1]; do
