@@ -185,11 +185,11 @@ case "$1" in
         done
 
         #play an animation while it's upgrading the script
-        printf "$GREEN $end_processes of ${#number_of_processes[@]} (/) $NC \r"
+        printf "$GREEN $(jobs -p) $end_processes of ${#number_of_processes[@]} (/) $NC \r"
         sleep .3
-        printf "$GREEN $end_processes of ${#number_of_processes[@]} (|) $NC \r"
+        printf "$GREEN $(jobs -p) $end_processes of ${#number_of_processes[@]} (|) $NC \r"
         sleep .3
-        printf "$GREEN $end_processes of ${#number_of_processes[@]} (\) $NC \r"
+        printf "$GREEN $(jobs -p) $end_processes of ${#number_of_processes[@]} (\) $NC \r"
         sleep .3
 
         # debug "raw"
