@@ -194,7 +194,11 @@ case "$1" in
 
   esac
 
-echo $1 | grep -q "playlist"
+if echo $1 | grep -q "playlist"; then
+  print " hay un playlist"
+else
+  print " NOOOOO "
+fi
 
 sleep 10
 exit 0
