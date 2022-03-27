@@ -163,7 +163,7 @@ case "$1" in
 
     NDL=($YDL_PID)
 
-    if echo $1 | grep -q "playlist";then
+    if echo $1 | grep -q "list";then
 
       TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
       echo Number of videos = $TOTALE
