@@ -170,18 +170,15 @@ case "$1" in
       #TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
       #printf "Number of videos = $TOTALE"
 
-      end_processes=0
       while (( ${#number_of_processes[@]})); do
         # count the processes active
-
+        end_processes=0
         for i in "${arrayName[@]}"
         do
           if kill -0 $i >/dev/null 2>&1; then
             ((end_processes=end_processes+1))
           fi
-          # do whatever on "$i" here
         done
-    # while kill -0 "$INS_PID" >/dev/null 2>&1; do
 
         #play an animation while it's upgrading the script
         printf "$GREEN $end_processes of ${#number_of_processes[@]} (/) $NC \r"
