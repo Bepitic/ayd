@@ -163,10 +163,12 @@ case "$1" in
 
     NDL=($YDL_PID)
 
+    printf "$GREEN 0 of ${#number_of_processes[@]} (/) $NC \r"
+
     if echo $1 | grep -q "list";then
 
-      TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
-      printf "Number of videos = $TOTALE"
+      #TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
+      #printf "Number of videos = $TOTALE"
 
       end_processes=0
       while [ ${#number_of_processes[@]} -ge 1]; do
@@ -194,11 +196,6 @@ case "$1" in
 
   esac
 
-if echo $1 | grep -q "list"; then
-  printf " hay un playlist"
-else
-  printf " NOOOOO "
-fi
 
 sleep 10
 exit 0
