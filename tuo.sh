@@ -172,6 +172,17 @@ case "$1" in
 
       end_processes=0
       while (( ${#number_of_processes[@]})); do
+        # count the processes active
+
+        for i in "${arrayName[@]}"
+        do
+          if kill -0 $i >/dev/null 2>&1; then
+            ((end_processes=end_processes+1))
+          fi
+          # do whatever on "$i" here
+        done
+    # while kill -0 "$INS_PID" >/dev/null 2>&1; do
+
         #play an animation while it's upgrading the script
         printf "$GREEN $end_processes of ${#number_of_processes[@]} (/) $NC \r"
         sleep .3
@@ -180,7 +191,7 @@ case "$1" in
         printf "$GREEN $end_processes of ${#number_of_processes[@]} (\) $NC \r"
         sleep .3
 
-        debug "raw"
+        # debug "raw"
 
 
 
