@@ -193,6 +193,9 @@ case "$1" in
     fi
 
   esac
+
+echo $1 | grep -q "playlist"
+
 sleep 10
 exit 0
 
