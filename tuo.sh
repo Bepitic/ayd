@@ -62,18 +62,18 @@ debug() {
 
 case "$1" in
   raw)
-    printf "$BLUE raw->$(ls "${TMP_DIR}/raw/") $NC \n\n"
+    printf "$BLUE raw->$(ls -la "${TMP_DIR}/raw/") $NC \n\n"
     ;;
   opt)
-    printf "$BLUE opt->$(ls "${TMP_DIR}/opt/") $NC \n\n"
+    printf "$BLUE opt->$(ls -la "${TMP_DIR}/opt/") $NC \n\n"
     ;;
   coo*)
-    printf "$BLUE coo->$(ls "${TMP_DIR}/cooked/") $NC \n\n"
+    printf "$BLUE coo->$(ls -la "${TMP_DIR}/cooked/") $NC \n\n"
     ;;
   *)
-    printf "$BLUE raw->$(ls "${TMP_DIR}/raw/") $NC \n\n"
-    printf "$BLUE opt->$(ls "${TMP_DIR}/opt/") $NC \n\n"
-    printf "$BLUE coo->$(ls "${TMP_DIR}/cooked/") $NC \n\n"
+    printf "$BLUE raw->$(ls -la "${TMP_DIR}/raw/") $NC \n\n"
+    printf "$BLUE opt->$(ls -la "${TMP_DIR}/opt/") $NC \n\n"
+    printf "$BLUE coo->$(ls -la "${TMP_DIR}/cooked/") $NC \n\n"
     ;;
   esac
 
