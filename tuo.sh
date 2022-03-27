@@ -61,9 +61,6 @@ debug() {
   clear
 
 case "$1" in
-  job*)
-    printf "$(jobs)"
-    ;;
   raw)
     printf "$BLUE raw->$(ls -la "${TMP_DIR}/raw/") $NC \n\n"
     ;;
@@ -177,25 +174,19 @@ case "$1" in
       #TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
       #printf "Number of videos = $TOTALE"
 
-      while (( ${#number_of_processes[@]})); do
+      #while (( ${#number_of_processes[@]})); do
+      while ! $(jobs|wc -l) -eq 0; do
         # count the processes active
-        end_processes=0
-        for i in "${number_of_processes[@]}"
-        do
-          if kill -0 $i 1>/dev/null 2>&1; then
-            ((end_processes++))
-          fi
-        done
 
         #play an animation while it's upgrading the script
-        printf "$GREEN $(jobs|wc -l) $end_processes of ${#number_of_processes[@]} (/) $NC \r"
+        printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $NC \r"
         sleep .3
-        printf "$GREEN $(jobs|wc -l) $end_processes of ${#number_of_processes[@]} (|) $NC \r"
+        printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (|) $NC \r"
         sleep .3
-        printf "$GREEN $(jobs|wc -l) $end_processes of ${#number_of_processes[@]} (\) $NC \r"
+        printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $NC \r"
         sleep .3
 
-        debug "jobs"
+        #debug "jobs"
 
 
 
