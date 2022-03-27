@@ -11,8 +11,6 @@ Android-Music-Download
 
 
 TODO:
-  - if the encoding catches up the downloads, the program finish.
-  - Check when the cover doesnt correspond.
   - find a way to search for the tags automaticaly.
   - At finish send a notification.
   - Set the script to put termux in bg
