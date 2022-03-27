@@ -171,7 +171,7 @@ case "$1" in
       #printf "Number of videos = $TOTALE"
 
       end_processes=0
-      while [ ${#number_of_processes[@]} -ge 1]; do
+      while (( ${#number_of_processes[@]})); do
         #play an animation while it's upgrading the script
         printf "$GREEN $end_processes of ${#number_of_processes[@]} (/) $NC \r"
         sleep .3
