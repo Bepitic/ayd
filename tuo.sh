@@ -175,8 +175,8 @@ case "$1" in
         end_processes=0
         for i in "${number_of_processes[@]}"
         do
-          if kill -0 $i >/dev/null 2>&1; then
-            ((end_processes=end_processes+1))
+          if kill -0 $i 1>/dev/null 2>&1; then
+            ((end_processes++))
           fi
         done
 
