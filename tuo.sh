@@ -175,7 +175,7 @@ case "$1" in
       #printf "Number of videos = $TOTALE"
 
       #while (( ${#number_of_processes[@]})); do
-      while ! $(jobs|wc -l) -eq 0; do
+      while ! [$(jobs|wc -l) -eq 0]; do
         # count the processes active
 
         #play an animation while it's upgrading the script
