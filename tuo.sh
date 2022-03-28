@@ -1,8 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 # shebang -> Use bash as shell interpreter.
-
 # #!/bin/sh
-
 #Author: Francisco Amoros Cubells
 #About: This file it's for get an url of yt (provide termux) and extract an mp3
 ff='/data/data/com.termux/files/usr/bin/'
@@ -52,17 +50,43 @@ if [ $(git -C $WD_AYD fetch --dry-run 2>&1 | wc -l) -gt 0 ] ; then
   exit 1
 fi
 
+
+debug() {
+
+  clear
+
+  case "$1" in
+    raw)
+      printf "$BLUE raw->$(ls -la "${TMP_DIR}/raw/") $NC \n\n"
+      ;;
+    opt)
+      printf "$BLUE opt->$(ls -la "${TMP_DIR}/opt/") $NC \n\n"
+      ;;
+    coo*)
+      printf "$BLUE coo->$(ls -la "${TMP_DIR}/cooked/") $NC \n\n"
+      ;;
+    *)
+      printf "$BLUE raw->$(ls -la "${TMP_DIR}/raw/") $NC \n\n"
+      printf "$BLUE opt->$(ls -la "${TMP_DIR}/opt/") $NC \n\n"
+      printf "$BLUE coo->$(ls -la "${TMP_DIR}/cooked/") $NC \n\n"
+      ;;
+  esac
+
+  sleep 2 
+}
+
+
+
 pip_upg_if_need()
 {
   #If it isn't updated then update
   #if [ $(pip list --outdated 2>&1 | grep $1 | wc -l) -gt 0 ] ; then
+  #Launch in background stdout and stderr don't show, then get the PID
+  pip install --upgrade $1 1>/dev/null 2>/dev/null &
+  INS_PID=$!
+  #See if the process it's running then do things
+  while kill -0 "$INS_PID" >/dev/null 2>&1; do
 
-    #Launch in background stdout and stderr don't show, then get the PID
-    pip install --upgrade $1 1>/dev/null 2>/dev/null &
-    INS_PID=$!
-
-    #See if the process it's running then do things
-    while kill -0 "$INS_PID" >/dev/null 2>&1; do
       #play an animation while it's installing the program
       printf "$GREEN Upgrading $1 (/) $NC \r"
       sleep .1
@@ -71,10 +95,24 @@ pip_upg_if_need()
       printf "$GREEN Upgrading $1 (\) $NC \r"
       sleep .1
     done
-
     #show when its installed
     printf "$BLUE Upgraded  $1        $NC \n"
     #fi
+  }
+
+download_img()
+{
+  printf "${YELLOW} Download images ${NC}\n"
+  youtube-dl \
+    --write-thumbnail \
+    --skip-download \
+    --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
+    -- "$@" \
+    1>/dev/null 2>$HOME/logs/err_img.txt
+
+    # 1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt
+
+    magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
   }
 
 pip_upg_if_need youtube-dl
@@ -92,24 +130,12 @@ case "$1" in
 
     mkdir "${TMP_DIR}"/raw "${TMP_DIR}"/cooked "${TMP_DIR}"/opt
 
-    # TODO:
-    # use --get-thumbnail to testif there is a thumbnIl
-    # if not take a thumbnail from other sources
-    # see if i can manage to get the artist and the song procedurally
+    download_img $@
 
-    printf "${YELLOW} Download images ${NC}\n"
-    youtube-dl \
-      --ignore-errors \
-      --write-thumbnail \
-      --skip-download \
-      --output "${TMP_DIR}/cooked/%(title)s.%(ext)s" \
-      -- "$@" \
-
-      # 1>$HOME/logs/out-thumbnail.txt 2>$HOME/logs/err-thumbnail.txt
-
+    # Ad the pid into the array of pids
     DOWNLOAD_IMG_PID=$!
+    number_of_processes+=(DOWNLOAD_IMG_PID)
 
-    
     #ls "${TMP_DIR}/cooked/"
     #echo hello
     #rm "${TMP_DIR}/cooked/*.webp"
@@ -123,172 +149,67 @@ case "$1" in
       --format 'bestaudio' \
       --output "${TMP_DIR}/raw/%(title)s" \
       -- "$@" \
-      # 1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
+      1>/dev/null 2>$HOME/logs/err_down.txt &
+          # 1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
 
-    YDL_PID=$!
+          YDL_PID=$!
+          number_of_processes+=(YDL_PID)
 
-    NDL=($YDL_PID)
-
+    # if it is a playlist
     if echo $1 | grep -q "list";then
-
-      TOTALE=$(youtube-dl -- "$1" --flat-playlist | fgrep 'video 1 of' | awk '{print $6}')
-
-
-        if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
-
-          for file in "${TMP_DIR}"/raw/* ; do
-
-            printf "trying to encode into mp3?: $file"
-            filenamebase=$(basename -- "$file")
-            extension="${filenamebase##*.}"
-
-            printf $extension
-            #if [ ! "${extension}" = "part" ]; then
-            if [[ ! $extension =~ "part"  ]]; then
-
-              printf $filenamebase
-              printf $extension
-
-              mv "${file}" "${TMP_DIR}/opt/"
-
-              BN=$(basename -- "${file}")
-              # sleep 10
-
-              ffmpeg \
-                -hide_banner \
-                -i "${TMP_DIR}"/opt/"${BN}" \
-                -codec:a libmp3lame \
-                -qscale:a 2 \
-                -vn \
-                -map_metadata -1 \
-                "${TMP_DIR}/cooked/${file##*/}.mp3" \
-
-                # 1>>$HOME/logs/enc_log.txt 2>>$HOME/logs/enc_err.txt &
-
-              YDL_PID="$! $YDL_PID"
-
-              NDL=($YDL_PID)
-
-            fi
-          done
-        fi
-
-        #debug {
-        #clear
-        #printf "$BLUE raw->$(ls "${TMP_DIR}/raw/") $NC \n\n"
-        #printf "$BLUE opt->$(ls "${TMP_DIR}/opt/") $NC \n\n"
-        #printf "$BLUE coo->$(ls "${TMP_DIR}/cooked/") $NC \n\n"
-        #sleep 2 #FIXME
-        #  }
-
-
-
-
-    else
-
-      while kill -0 "$NDL" >/dev/null 2>&1; do
-        printf "$GREEN Downloading(/)$NC\r"
-        sleep .2
-        printf "$GREEN Downloading(|)$NC\r"
-        sleep .2
-        printf "$GREEN Downloading(\)$NC\r"
-        sleep .2
-        printf "$GREEN Downloading(-)$NC\r"
-        sleep .2
-      done
-
-        if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
-
-          for file in "${TMP_DIR}"/raw/* ; do
-
-            filenamebase=$(basename -- "$file")
-            extension="${filenamebase##*.}"
-
-            if [ ! "${extension}" = "part" ]; then
-
-              mv "${file}" "${TMP_DIR}/opt/"
-
-              BN=$(basename -- "${file}")
-
-              printf "${YELLOW} converter videos ${NC}\n"
-              ffmpeg \
-                -hide_banner \
-                -i "${TMP_DIR}"/opt/"${BN}" \
-                -codec:a libmp3lame \
-                -qscale:a 2 \
-                -vn \
-                -map_metadata -1 \
-                "${TMP_DIR}/cooked/${file##*/}.mp3" \
-                1>>log.txt 2>>log.txt &
-
-              ENC=$!
-
-              while kill -0 "$ENC" >/dev/null 2>&1; do
-                printf "$GREEN Encoding(/)$NC    \r"
-                sleep .2
-                printf "$GREEN Encoding(|)$NC\r"
-                sleep .2
-                printf "$GREEN Encoding(\)$NC\r"
-                sleep .2
-                printf "$GREEN Encoding(-)$NC\r"
-                sleep .2
-              done
-            fi
-          done
-        fi
-        printf "$BLUE Encoded (-)                             $NC \n\n"
+      echo hello list
     fi
 
-    mkdir -p "${OUT_DIR}"
+    while (( $(jobs|wc -l) != 0 )); do
+      # count the processes active
 
-    magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
+      # if it is still downloading, check for new files
+      # that doesnt finish on .part
+      if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
 
-    for file in  "${TMP_DIR}"/cooked/* ; do
-      printf "trying to fit image into mp3?: $file"
-      filenamebase=$(basename -- "$file")
-      extension="${filenamebase##*.}"
-      filename="${filenamebase%.*}"
-      #mkdir -p "${TMP_DIR}"/cooked/"${filename}"
+        for file in "${TMP_DIR}"/raw/* ; do
 
-      if [ ! "${extension}" = "jpg" ]; then
+          filenamebase=$(basename -- "$file")
+          extension="${filenamebase##*.}"
 
-        #magick "${TMP_DIR}/cooked/%(title)s.%(ext)s" "${TMP_DIR}/cooked/%(title)s.jpg"
-        #echo the file is: $file
-        filewiked=$(cut -d "." -f1 <<< "$filename")
-        mkdir -p "${TMP_DIR}"/cooked/"${filename}"
+          if [ ! "${extension}" = "part" ]; then
 
-        if [ -f "${TMP_DIR}/cooked/${filename}.jpg" ]; then
+            mv "${file}" "${TMP_DIR}/opt/"
 
-          mid3v2 --picture="${TMP_DIR}/cooked/${filename}.jpg" \
-            "${TMP_DIR}/cooked/${filename}.${extension}"
+            BN=$(basename -- "${file}")
 
-          rm "${TMP_DIR}/cooked/${filename}.jpg"
+            printf "${YELLOW} converter videos ${NC}\n"
+            ffmpeg \
+              -hide_banner \
+              -i "${TMP_DIR}"/opt/"${BN}" \
+              -codec:a libmp3lame \
+              -qscale:a 2 \
+              -vn \
+              -map_metadata -1 \
+              "${TMP_DIR}/cooked/${file##*/}.mp3" \
+              1>>log.txt 2>>log.txt &
 
-        elif [ -f "${TMP_DIR}/cooked/${filewiked}.jpg" ];then
+          fi # if the extension is not .part
+        done # for all the files in raw
+      fi # if downloads is not finished
 
-          mid3v2 --picture="${TMP_DIR}/cooked/${filewiked}.jpg" \
-            "${TMP_DIR}/cooked/${filename}.${extension}"
+      #play an animation while it's upgrading the script
+      printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $NC \r"
+      sleep .3
+      printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (|) $NC \r"
+      sleep .3
+      printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $NC \r"
+      sleep .3
 
-          rm "${TMP_DIR}/cooked/${filewiked}.jpg"
-
-        fi
-
-        mv "${file}" "${TMP_DIR}"/cooked/"${filename}"/
-      fi
     done
 
-    cp -rf "${TMP_DIR}"/cooked/* "${OUT_DIR}"
+  esac
 
-    rm -rf "${TMP_DIR}"
 
-    ;;
-  *)
-    printf "Unhandled URL type: $1"
-esac
+  sleep 10
+  exit 0
 
-sleep .5
-sleep 10
-exit 0
+
 # Using arrays Bash
 # Syntax	        Result
 # arr=()	        Create an empty array
@@ -302,3 +223,7 @@ exit 0
 # str=$(ls)	      Save ls output as a string
 # arr=( $(ls) )	  Save ls output as an array of files
 # ${arr[@]:s:n}	  Retrieve n elements starting at index s
+
+
+
+
