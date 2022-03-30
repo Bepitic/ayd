@@ -209,6 +209,8 @@ case "$1" in
     sleep .3
     printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $NC \r"
     sleep .3
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (-) $NC \r"
+    sleep .3
 
   done
 
