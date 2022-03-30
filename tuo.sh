@@ -195,7 +195,7 @@ case "$1" in
     # count the processes active
 
     convert_to_mp3 > CONVERT_YT
-    if [ -z "$var" ]
+    if [ -z "$CONVERT_YT" ]
     then
       sleep .1
     else
