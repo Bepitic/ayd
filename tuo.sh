@@ -169,7 +169,7 @@ case "$1" in
 
   # Ad the pid into the array of pids
   DOWNLOAD_IMG_PID=$!
-  number_of_processes+=(DOWNLOAD_IMG_PID)
+  number_of_processes+=($DOWNLOAD_IMG_PID)
 
   #ls "${TMP_DIR}/cooked/"
   #echo hello
@@ -188,7 +188,7 @@ case "$1" in
   # 1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
 
   YDL_PID=$!
-  number_of_processes+=(YDL_PID)
+  number_of_processes+=($YDL_PID)
 
 
   while (( $(jobs|wc -l) != 0 )); do
@@ -210,7 +210,7 @@ case "$1" in
     then
       sleep .1
     else
-      number_of_processes+=(CONVERT_YT)
+      number_of_processes+=($CONVERT_YT)
       CONVERT_YT=''
     fi
     #play an animation while it's upgrading the script
