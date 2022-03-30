@@ -200,7 +200,7 @@ case "$1" in
       if kill -0 "$I" >/dev/null 2>&1
       then
         ((COUNTER++))
-        printf "$BLUE (/) $COUNTER $NC \r"
+        #printf "$BLUE (/) $COUNTER $NC \r"
         sleep .3
       fi
     done
