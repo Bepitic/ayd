@@ -143,6 +143,8 @@ convert_to_mp3()
           "${TMP_DIR}/cooked/${file##*/}.mp3" \
           1>>log.txt 2>>log.txt &
 
+        echo $!
+
       fi # if the extension is not .part
     done # for all the files in raw
   fi # if downloads is not finished
@@ -163,7 +165,7 @@ case "$1" in
 
   mkdir "${TMP_DIR}"/raw "${TMP_DIR}"/cooked "${TMP_DIR}"/opt
 
-  download_img $@
+  download_img $@ &
 
   # Ad the pid into the array of pids
   DOWNLOAD_IMG_PID=$!
@@ -192,10 +194,14 @@ case "$1" in
   while (( $(jobs|wc -l) != 0 )); do
     # count the processes active
 
-    convert_to_mp3
-
-    CONVERT_YT=$!
-    number_of_processes+=(CONVERT_YT)
+    convert_to_mp3 > CONVERT_YT
+    if [ -z "$var" ]
+    then
+      sleep .1
+    else
+      number_of_processes+=(CONVERT_YT)
+      CONVERT_YT=''
+    fi
     #play an animation while it's upgrading the script
     printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $NC \r"
     sleep .3
