@@ -196,6 +196,7 @@ case "$1" in
     # count the processes active
     for I in "${number_of_processes[@]}"
     do
+      echo $I
       if kill -0 "$I" >/dev/null 2>&1
       then
         ((COUNTER++))
