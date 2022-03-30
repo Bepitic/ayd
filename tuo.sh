@@ -192,7 +192,15 @@ case "$1" in
 
 
   while (( $(jobs|wc -l) != 0 )); do
+    COUNTER=0
     # count the processes active
+    for I in "${number_of_processes[@]}"
+    do
+      if kill -0 "$I" >/dev/null 2>&1
+      then
+        ((COUNTER++))
+      fi
+    done
 
     CONVERT_YT=$(convert_to_mp3)
     if [ -z "$CONVERT_YT" ]
@@ -203,13 +211,13 @@ case "$1" in
       CONVERT_YT=''
     fi
     #play an animation while it's upgrading the script
-    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $NC \r"
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $COUNTER $NC \r"
     sleep .3
-    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (|) $NC \r"
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (|) $COUNTER $NC \r"
     sleep .3
-    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $NC \r"
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $COUNTER $NC \r"
     sleep .3
-    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (-) $NC \r"
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (-) $COUNTER $NC \r"
     sleep .3
 
   done
