@@ -194,7 +194,7 @@ case "$1" in
   while (( $(jobs|wc -l) != 0 )); do
     # count the processes active
 
-    convert_to_mp3 > CONVERT_YT
+    CONVERT_YT=$(convert_to_mp3)
     if [ -z "$CONVERT_YT" ]
     then
       sleep .1
