@@ -115,99 +115,102 @@ download_img()
     magick mogrify -format jpg -path "${TMP_DIR}/cooked/" "${TMP_DIR}/cooked/*.webp" 1>>log.txt 2>>log.txt
   }
 
+convert_to_mp3()
+{
+  # if it is still downloading, check for new files
+  # that doesnt finish on .part
+  if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
+
+    for file in "${TMP_DIR}"/raw/* ; do
+
+      filenamebase=$(basename -- "$file")
+      extension="${filenamebase##*.}"
+
+      if [ ! "${extension}" = "part" ]; then
+
+        mv "${file}" "${TMP_DIR}/opt/"
+
+        BN=$(basename -- "${file}")
+
+        printf "${YELLOW} converter videos ${NC}\n"
+        ffmpeg \
+          -hide_banner \
+          -i "${TMP_DIR}"/opt/"${BN}" \
+          -codec:a libmp3lame \
+          -qscale:a 2 \
+          -vn \
+          -map_metadata -1 \
+          "${TMP_DIR}/cooked/${file##*/}.mp3" \
+          1>>log.txt 2>>log.txt &
+
+      fi # if the extension is not .part
+    done # for all the files in raw
+  fi # if downloads is not finished
+}
+
 pip_upg_if_need youtube-dl
 pip_upg_if_need mutagen
 mkdir -p $HOME/logs
 
 # IF the url contain youtube*
 case "$1" in
-  *youtu*)
+*youtu*)
 
-    printf "${YELLOW} Youtube-dl ${NC}\n"
-    TMP_DIR="$(mktemp -dt musica-dl.XXXXXX)"
-    OUT_DIR="/storage/emulated/0/Music/ayd"
-    CONFIG="${HOME}/.config/musica-dl"
+  printf "${YELLOW} Youtube-dl ${NC}\n"
+  TMP_DIR="$(mktemp -dt musica-dl.XXXXXX)"
+  OUT_DIR="/storage/emulated/0/Music/ayd"
+  CONFIG="${HOME}/.config/musica-dl"
 
-    mkdir "${TMP_DIR}"/raw "${TMP_DIR}"/cooked "${TMP_DIR}"/opt
+  mkdir "${TMP_DIR}"/raw "${TMP_DIR}"/cooked "${TMP_DIR}"/opt
 
-    download_img $@
+  download_img $@
 
-    # Ad the pid into the array of pids
-    DOWNLOAD_IMG_PID=$!
-    number_of_processes+=(DOWNLOAD_IMG_PID)
+  # Ad the pid into the array of pids
+  DOWNLOAD_IMG_PID=$!
+  number_of_processes+=(DOWNLOAD_IMG_PID)
 
-    #ls "${TMP_DIR}/cooked/"
-    #echo hello
-    #rm "${TMP_DIR}/cooked/*.webp"
-    #ls "${TMP_DIR}/cooked/"
+  #ls "${TMP_DIR}/cooked/"
+  #echo hello
+  #rm "${TMP_DIR}/cooked/*.webp"
+  #ls "${TMP_DIR}/cooked/"
 
-    printf "${YELLOW} Download videos ${NC}\n"
-    youtube-dl \
-      --ignore-errors \
-      --prefer-ffmpeg \
-      --ffmpeg-location $ff \
-      --format 'bestaudio' \
-      --output "${TMP_DIR}/raw/%(title)s" \
-      -- "$@" \
-      1>/dev/null 2>$HOME/logs/err_down.txt &
-          # 1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
+  printf "${YELLOW} Download videos ${NC}\n"
+  youtube-dl \
+    --ignore-errors \
+    --prefer-ffmpeg \
+    --ffmpeg-location $ff \
+    --format 'bestaudio' \
+    --output "${TMP_DIR}/raw/%(title)s" \
+    -- "$@" \
+    1>/dev/null 2>$HOME/logs/err_down.txt &
+  # 1>$HOME/logs/out-ytdl.txt 2>$HOME/logs/err-ytdl.txt
 
-          YDL_PID=$!
-          number_of_processes+=(YDL_PID)
-
-    # if it is a playlist
-    if echo $1 | grep -q "list";then
-      echo hello list
-    fi
-
-    while (( $(jobs|wc -l) != 0 )); do
-      # count the processes active
-
-      # if it is still downloading, check for new files
-      # that doesnt finish on .part
-      if [ "$(ls -A "${TMP_DIR}"/raw/)" ]; then
-
-        for file in "${TMP_DIR}"/raw/* ; do
-
-          filenamebase=$(basename -- "$file")
-          extension="${filenamebase##*.}"
-
-          if [ ! "${extension}" = "part" ]; then
-
-            mv "${file}" "${TMP_DIR}/opt/"
-
-            BN=$(basename -- "${file}")
-
-            printf "${YELLOW} converter videos ${NC}\n"
-            ffmpeg \
-              -hide_banner \
-              -i "${TMP_DIR}"/opt/"${BN}" \
-              -codec:a libmp3lame \
-              -qscale:a 2 \
-              -vn \
-              -map_metadata -1 \
-              "${TMP_DIR}/cooked/${file##*/}.mp3" \
-              1>>log.txt 2>>log.txt &
-
-          fi # if the extension is not .part
-        done # for all the files in raw
-      fi # if downloads is not finished
-
-      #play an animation while it's upgrading the script
-      printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $NC \r"
-      sleep .3
-      printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (|) $NC \r"
-      sleep .3
-      printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $NC \r"
-      sleep .3
-
-    done
-
-  esac
+  YDL_PID=$!
+  number_of_processes+=(YDL_PID)
 
 
-  sleep 10
-  exit 0
+  while (( $(jobs|wc -l) != 0 )); do
+    # count the processes active
+
+    convert_to_mp3
+
+    CONVERT_YT=$!
+    number_of_processes+=(CONVERT_YT)
+    #play an animation while it's upgrading the script
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (/) $NC \r"
+    sleep .3
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (|) $NC \r"
+    sleep .3
+    printf "$GREEN Active $(jobs|wc -l) of ${#number_of_processes[@]} (\) $NC \r"
+    sleep .3
+
+  done
+
+esac
+
+
+sleep 10
+exit 0
 
 
 # Using arrays Bash
@@ -223,7 +226,4 @@ case "$1" in
 # str=$(ls)	      Save ls output as a string
 # arr=( $(ls) )	  Save ls output as an array of files
 # ${arr[@]:s:n}	  Retrieve n elements starting at index s
-
-
-
 
